@@ -24,12 +24,12 @@ router.get("/", async (req, res) => {
 
 	//debug when ade offline
 	//read file
-	const filePath = path.join("C:/Users/maxen/Downloads/ADECal.ics");
+	/*const filePath = path.join("C:/Users/maxen/Downloads/ADECal.ics");
 	const icalData = fs.readFileSync(filePath, { encoding: "utf-8" });
 	const calendar = ical2json.convert(icalData);
 	const cours = calendar.VCALENDAR[0].VEVENT;
 
-	return res.status(200).send(cours || []);
+	return res.status(200).send(cours || []);*/
 
 	let resources = classe;
 	// if (req.query.pvp) {
