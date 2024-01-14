@@ -1,0 +1,56 @@
+.Container-container {
+	background-color: #fff;
+	flex: 1;
+}
+
+.MainLayout-container {
+	overflow-y: hidden !important;
+}
+
+.MainLayout-dayScaleEmptyCell {
+	min-width: 57px !important;
+}
+
+.Layout-timeScaleContainer {
+	width: 48px !important;
+}
+
+.MuiToolbar-root {
+	position: relative;
+}
+
+#time {
+	text-align: center;
+	position: absolute;
+	margin: 0;
+	top: 50%;
+	right: 1em;
+	transform: translateY(-50%);
+	z-index: 1;
+}
+
+.swal2-popup {
+	width: fit-content !important;
+}
+
+.truncated {
+	display: -webkit-box;
+	/* line authorized before ellipsis */
+	-webkit-line-clamp: 3;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+.event-text p {
+	margin: 0;
+}
+
+.event-text .description {
+	margin-top: 0.5em;
+}
+
+@media screen and (max-width: 560px) {
+	#time-text {
+		display: none;
+	}
+}
