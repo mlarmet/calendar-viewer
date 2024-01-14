@@ -27,8 +27,8 @@ for (let route of routes) {
 	app.use("/api/" + route.path, require(`./routes/${route.router}`));
 }
 
-app.use(express.static(path.join(__dirname, "build")));
-app.get("/", (req, res) => res.sendFile(path.resolve(__dirname, "build", "index.html")));
+app.use(express.static(path.join(__dirname, "dist")));
+app.get("/", (req, res) => res.sendFile(path.resolve(__dirname, "dist", "index.html")));
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
