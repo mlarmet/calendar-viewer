@@ -70,8 +70,10 @@ const getData = (icalData: icalItem[]): AppointmentModel[] => {
 			const endDate = icalDataItem.DTEND;
 
 			// Remove the date from the description, prevent display it in the tooltip
-			const pattern = /Exporté le:(\d{2}\/\d{2}\/\d{4} \d{2}:\d{2})/;
+			const pattern = /\(Exporté le:\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}\)/;
 			const description = icalDataItem.DESCRIPTION.replace(pattern, "").split("\\n");
+
+			console.log(description);
 
 			const title = icalDataItem.SUMMARY;
 
@@ -240,7 +242,9 @@ const Calendar: React.FC<CalendarProps> = ({ classeCode }) => {
 		<React.Fragment>
 			{dateCache !== undefined ? (
 				<div id="cache-warning">
-					<h3>⚠️ Données du {dateCache}</h3>
+					<h3>
+						<span className="emoji">⚠️</span>Données du {dateCache}
+					</h3>
 					<button type="button" onClick={fetchData}>
 						Rafraîchir
 					</button>

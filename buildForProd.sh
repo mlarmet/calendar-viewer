@@ -35,7 +35,7 @@ print_colored_text_and_background() {
 
 ########################################################
 
-cls
+clear
 
 print_colored_text "\nBuild frontend..." $JAUNE
 
