@@ -10,3 +10,7 @@ export interface icalItem {
 	"LAST-MODIFIED": string;
 	SEQUENCE: string;
 }
+
+export type CalendarProps = {
+	classeCode: string;
+};

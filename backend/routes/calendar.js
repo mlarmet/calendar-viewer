@@ -18,18 +18,17 @@ router.get("/", async (req, res) => {
 	let classe = req.query.classe;
 
 	if (classe == null) {
-		res.status(400).send({ code: 400, message: "invalid classe" });
-		return;
+		return res.status(400).send({ success: false, code: -1, message: "invalid classe" });
 	}
 
-	//debug when ade offline
-	//read file
-	/*const filePath = path.join("C:/Users/maxen/Downloads/ADECal.ics");
-	const icalData = fs.readFileSync(filePath, { encoding: "utf-8" });
-	const calendar = ical2json.convert(icalData);
-	const cours = calendar.VCALENDAR[0].VEVENT;
+	// Debug when ade offline => read data from file
+	/*
+	const filePath = path.resolve("./ADECal.ics");
+	const fileData = fs.readFileSync(filePath, { encoding: "utf-8" });
+	const data = ical2json.convert(fileData).VCALENDAR[0].VEVENT;
 
-	return res.status(200).send(cours || []);*/
+	return res.status(200).send({ success: true, code: 0, data: data || [], message: "success get file data" });
+	*/
 
 	let resources = classe;
 	// if (req.query.pvp) {
@@ -54,23 +53,21 @@ router.get("/", async (req, res) => {
 	//const icsURL = `https://ade.univ-brest.fr/jsp/custom/modules/plannings/anonymous_cal.jsp?resources=${resources}&projectId=6&calType=ical&nbWeeks=4&displayConfigId=172`;
 	const icsURL = `https://ade.univ-brest.fr/jsp/custom/modules/plannings/anonymous_cal.jsp?resources=${resources}&projectId=13&calType=ical&displayConfigId=25&firstDate=${firstDate}&lastDate=${lastDate}`;
 
-	let results = await fetch(icsURL);
+	const results = await fetch(icsURL);
 
-	if (results.ok) {
-		const icalData = await results.text();
-		const calendar = ical2json.convert(icalData);
-
-		if (!calendar.VCALENDAR || !calendar.VCALENDAR[0] || !calendar.VCALENDAR[0].VEVENT) {
-			console.log(icsURL);
-
-			return res.status(400).send({ res: false, message: "error request ade" });
-		}
-
-		const cours = calendar.VCALENDAR[0].VEVENT;
-		return res.status(200).send(cours);
-	} else {
-		return res.status(400).send({ code: 400, message: "error request ade" });
+	if (!results.ok) {
+		return res.status(400).send({ success: false, code: -2, message: "error request ade" });
 	}
+
+	const icalData = await results.text();
+	const calendar = ical2json.convert(icalData);
+
+	if (!calendar.VCALENDAR || !calendar.VCALENDAR[0] || !calendar.VCALENDAR[0].VEVENT) {
+		return res.status(400).send({ success: false, code: -2, message: "error request ade" });
+	}
+
+	const cours = calendar.VCALENDAR[0].VEVENT;
+	return res.status(200).send({ success: true, code: 0, data: cours, message: "success fetch ade" });
 });
 
 module.exports = router;

@@ -25,7 +25,7 @@ import moment from "moment";
 import "./calendar.css";
 
 // Custom types imports
-import { icalItem } from "./calendar.d";
+import { CalendarProps, icalItem } from "./calendar.d";
 
 const dayStartHour: number = 8;
 const dayEndHour: number = 19;
@@ -312,6 +312,7 @@ const errorSwal = Swal.mixin({
 	title: "Erreur lors de la récupération !",
 	confirmButtonText: "Réesayer",
 	confirmButtonColor: "var(--blue)",
+	reverseButtons: true,
 	allowOutsideClick: false,
 	allowEscapeKey: false,
 	allowEnterKey: false,
@@ -353,9 +354,8 @@ const getDate = (): string => {
 	return moment().format("YYYY-MM-DD");
 };
 
-export default function Calendar() {
+const Calendar: React.FC<CalendarProps> = ({ classeCode }) => {
 	const [listCours, setListCours] = useState<AppointmentModel[]>([]);
-
 	const [currentDate, setCurrentDate] = useState<string>(moment().format("YYYY-MM-DD"));
 
 	// Update hours of the week when currentDate change (change week) or when listCours updated
@@ -390,36 +390,85 @@ export default function Calendar() {
 		if (loading) {
 			loadingSwal.fire();
 		} else if (error) {
-			errorSwal.fire().then((result) => {
-				if (result.isConfirmed) {
-					fetchData();
-				}
-			});
+			const cache = localStorage.getItem(classeCode);
+
+			if (cache) {
+				const dataCache = JSON.parse(cache);
+
+				const dateCache = moment(dataCache.date);
+
+				errorSwal
+					.fire({
+						text: `Il existe une sauvegarde du ${dateCache.format("DD/MM/YYYY")} à ${dateCache.format("HH:mm")}.`,
+						cancelButtonText: "Backup",
+						cancelButtonColor: "var(--red)",
+						showCancelButton: true,
+					})
+					.then((result) => {
+						if (result.isConfirmed) {
+							fetchData();
+						} else if (result.dismiss === Swal.DismissReason.cancel) {
+							loadCache();
+						}
+					});
+			} else {
+				errorSwal.fire().then((result) => {
+					if (result.isConfirmed) {
+						fetchData();
+					}
+				});
+			}
 		} else {
 			Swal.close();
 		}
+	};
+
+	const loadCache = () => {
+		const cache = localStorage.getItem(classeCode);
+
+		if (cache) {
+			const dataCache = JSON.parse(cache);
+
+			setListCours(dataCache.cours);
+		}
+	};
+
+	const saveCache = (cours: AppointmentModel[]) => {
+		const data = {
+			date: moment(),
+			cours: cours,
+		};
+
+		localStorage.setItem(classeCode, JSON.stringify(data));
 	};
 
 	const fetchData = async () => {
 		try {
 			displaySwal(true, false);
 
-			const response = await fetch(import.meta.env.VITE_BACKEND_URL + "calendar?classe=4709", {
+			if (classeCode === "") {
+				return;
+			}
+
+			const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}calendar?classe=${classeCode}`, {
 				headers: {
 					"Access-Control-Allow-Origin": import.meta.env.VITE_ORIGIN_URL,
 				},
 			});
 
-			if (!response.ok || response.status >= 400) {
+			const result = await response.json();
+
+			if (!result.success) {
 				displaySwal(false, true);
 
 				return;
 			}
 
-			const result = await response.json();
-			const data = getData(result);
+			const cours = getData(result.data);
 
-			setListCours(data);
+			setListCours(cours);
+
+			saveCache(cours);
 
 			displaySwal(false, false);
 		} catch (err) {
@@ -452,7 +501,7 @@ export default function Calendar() {
 
 		fetchData();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+	}, [classeCode]);
 
 	return (
 		<Scheduler data={listCours} height="auto" locale="fr-FR">
@@ -472,4 +521,6 @@ export default function Calendar() {
 			/>
 		</Scheduler>
 	);
-}
+};
+
+export default Calendar;
