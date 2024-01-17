@@ -31,11 +31,9 @@ const Header: React.FC<HeaderProps> = ({ startClasseCode, onClasseChange }) => {
 
 	return (
 		<header>
-			<h1>Emplois du temps</h1>
-			<div id="options">
-				<div id="select-classe">
-					<Select className="select" value={selectedOption} onChange={handleClasseChange} options={options} isSearchable={false} />
-				</div>
+			<h1>📅 Emplois du temps</h1>
+			<div id="select-classe">
+				<Select className="select" value={selectedOption} onChange={handleClasseChange} options={options} isSearchable={false} />
 			</div>
 		</header>
 	);

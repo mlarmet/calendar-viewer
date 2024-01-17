@@ -19,47 +19,15 @@ header h1 {
 	margin: 0;
 }
 
-header #options {
-	/* grid align */
-	/* justify-self: flex-end; */
-
-	display: flex;
-	align-items: center;
-}
-header #options #checkbox-alternance {
-	color: #000;
-	background-color: hsl(0, 0%, 100%);
-	border: 1px solid hsl(0, 0%, 80%);
-	border-radius: 4px;
-	margin-left: 0.5em;
-	padding: 7.5px;
-	cursor: pointer;
-	min-width: max-content;
-}
-
-header #options #checkbox-alternance input {
-	vertical-align: bottom;
-	margin-left: 0;
-	margin-right: 0.5em;
-}
-
 .select {
 	width: fit-content;
-	color: #000;
+	color: var(--black);
 	margin-left: 0.5em;
-}
-
-label:has(input:disabled) {
-	color: rgb(153, 153, 153);
 }
 
 @media screen and (max-width: 630px) {
 	header {
 		flex-direction: column;
 		align-items: center;
-	}
-
-	header #options {
-		margin-top: 0.5em;
 	}
 }

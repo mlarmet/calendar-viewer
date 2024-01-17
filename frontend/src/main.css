@@ -17,8 +17,8 @@ body {
 	height: 100% !important;
 }
 
-body.swal2-height-auto {
-	height: 100% !important;
+#root {
+	height: 100%;
 }
 
 body {
@@ -29,20 +29,10 @@ body {
 	-moz-osx-font-smoothing: grayscale;
 }
 
+body.swal2-height-auto {
+	height: 100% !important;
+}
+
 code {
 	font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
-}
-
-#root {
-	height: 100%;
-}
-
-.title {
-	background-color: var(--white);
-	color: black;
-}
-
-.title.active {
-	background-color: var(--black) !important;
-	color: #fff !important;
 }

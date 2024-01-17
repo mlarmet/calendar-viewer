@@ -29,6 +29,42 @@
 	z-index: 1;
 }
 
+#cache-warning {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	gap: 1em;
+
+	margin: 0.75em;
+
+	color: var(--black);
+}
+
+#cache-warning h3 {
+	text-align: center;
+	margin: 0;
+}
+
+#cache-warning button {
+	cursor: pointer;
+	border: none;
+
+	padding: 0.625em 1.1em;
+	border-radius: 0.25em;
+
+	background-color: var(--red);
+	color: var(--white);
+}
+
+#cache-warning button:hover {
+	background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1));
+}
+
+#cache-warning button:focus {
+	box-shadow: 0 0 0 3px rgba(100, 150, 200, 0.5);
+}
+
 .swal2-popup {
 	width: fit-content !important;
 }
