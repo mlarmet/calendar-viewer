@@ -14,6 +14,9 @@ const path = require("path");
 
 //DEFAULT PATH IS /calendar
 
+const DEFAULT_FIRST_DATE = "2023-09-1";
+const DEFAULT_LAST_DATE = "2024-08-31";
+
 router.get("/", async (req, res) => {
 	let classe = req.query.classe;
 
@@ -40,8 +43,8 @@ router.get("/", async (req, res) => {
 	// 	resources += `,2639`;
 	// }
 
-	let firstDate = "2023-09-1";
-	let lastDate = "2024-08-31";
+	let firstDate = DEFAULT_FIRST_DATE;
+	let lastDate = DEFAULT_LAST_DATE;
 
 	if (req.query.today == "true") {
 		firstDate = lastDate = moment().format("YYYY-MM-DD");
