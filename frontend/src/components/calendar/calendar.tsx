@@ -73,8 +73,6 @@ const getData = (icalData: icalItem[]): AppointmentModel[] => {
 			const pattern = /\(Exporté le:\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}\)/;
 			const description = icalDataItem.DESCRIPTION.replace(pattern, "").split("\\n");
 
-			console.log(description);
-
 			const title = icalDataItem.SUMMARY;
 
 			// "Période en entreprise" doesn't have a prof
