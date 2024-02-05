@@ -6,7 +6,7 @@ import { HeaderProps, Option } from "./header.d";
 import "./header.css";
 
 const options: Option[] = [
-	{ value: "4709", label: "M2 TIIL-A" },
+	{ value: "7073", label: "M2 TIIL-A" },
 	{ value: "35", label: "L3 IFA 3" },
 ];
 
