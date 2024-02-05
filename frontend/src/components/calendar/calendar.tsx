@@ -78,7 +78,7 @@ const getData = (icalData: icalItem[]): AppointmentModel[] => {
 			// "Période en entreprise" doesn't have a prof
 			const prof = description[description.length - 3];
 
-			const salle = icalDataItem.LOCATION;
+			const salle = icalDataItem.LOCATION.replaceAll("\\,", ", ");
 
 			data.push({
 				title,
@@ -99,7 +99,7 @@ const getDate = (): string => {
 };
 
 const Calendar: React.FC<CalendarProps> = ({ classeCode }) => {
-	const [dateCache, setDateCache] = useState<string | undefined>(undefined);
+	const [dateOfCache, setDateOfCache] = useState<string | undefined>(undefined);
 	const [listCours, setListCours] = useState<AppointmentModel[]>([]);
 	const [currentDate, setCurrentDate] = useState<string>(moment().format("YYYY-MM-DD"));
 
@@ -132,15 +132,13 @@ const Calendar: React.FC<CalendarProps> = ({ classeCode }) => {
 	};
 
 	const displaySwal = (loading: boolean, error: boolean) => {
-		if (!loading && !error) {
-			Swal.close();
-		}
-
 		if (loading) {
 			loadingSwal.fire();
-		} else if (error) {
-			if (localStorage.getItem(classeCode)) {
-				loadCache();
+			return;
+		}
+
+		if (error) {
+			if (loadCache()) {
 				Swal.close();
 			} else {
 				errorSwal.fire().then((result) => {
@@ -149,18 +147,40 @@ const Calendar: React.FC<CalendarProps> = ({ classeCode }) => {
 					}
 				});
 			}
+
+			return;
 		}
+
+		Swal.close();
 	};
 
-	const loadCache = () => {
-		const cache = localStorage.getItem(classeCode);
+	const clearCache = () => {
+		// remove all item in cache but not classCode and classData :
 
-		if (cache) {
-			const dataCache = JSON.parse(cache);
+		Object.keys(localStorage).forEach((key) => {
+			if (key !== "classeCode" && key !== "classeData") {
+				localStorage.removeItem(key);
+			}
+		});
+	};
 
-			setListCours(dataCache.cours);
-			setDateCache(moment(dataCache.date).format("DD/MM/YYYY à HH:mm"));
+	const loadCache = (): boolean => {
+		const cache = localStorage.getItem("classeData");
+
+		if (!cache) {
+			return false;
 		}
+
+		const dataCache = JSON.parse(cache);
+
+		if (!dataCache[classeCode]) {
+			return false;
+		}
+
+		setListCours(dataCache.cours);
+		setDateOfCache(moment(dataCache.date).format("DD/MM/YYYY à HH:mm"));
+
+		return true;
 	};
 
 	const saveCache = (cours: AppointmentModel[]) => {
@@ -169,12 +189,18 @@ const Calendar: React.FC<CalendarProps> = ({ classeCode }) => {
 			cours: cours,
 		};
 
-		localStorage.setItem(classeCode, JSON.stringify(data));
+		const classeData = JSON.parse(localStorage.getItem("classeData") || "{}");
+
+		classeData[classeCode] = data;
+
+		localStorage.setItem("classeData", JSON.stringify(classeData));
+
+		clearCache();
 	};
 
 	const fetchData = async () => {
 		try {
-			setDateCache(undefined);
+			setDateOfCache(undefined);
 
 			displaySwal(true, false);
 
@@ -238,10 +264,10 @@ const Calendar: React.FC<CalendarProps> = ({ classeCode }) => {
 
 	return (
 		<React.Fragment>
-			{dateCache !== undefined ? (
+			{dateOfCache !== undefined ? (
 				<div id="cache-warning">
 					<h3>
-						<span className="emoji">⚠️</span>Données du {dateCache}
+						<span className="emoji">⚠️</span>Données du {dateOfCache}
 					</h3>
 					<button type="button" onClick={fetchData}>
 						Rafraîchir
