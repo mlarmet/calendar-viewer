@@ -2,12 +2,65 @@ import { styled, Theme } from "@mui/material/styles";
 import Grid from "@mui/material/Grid";
 import { Room, People, Lens, AccessTime, SvgIconComponent } from "@mui/icons-material";
 
-import { SchedulerDateTime } from "@devexpress/dx-react-scheduler";
+import { AppointmentModel, SchedulerDateTime } from "@devexpress/dx-react-scheduler";
 import { Appointments, AppointmentTooltip, CurrentTimeIndicator } from "@devexpress/dx-react-scheduler-material-ui";
 import moment from "moment";
 
 const pvpBackgroundColor: string = "#7A7A76";
 const defaultBackgroundColor: string = "#4FC3F7";
+
+const COLORS = [
+	{ hex: "#00a5e0", selected: false },
+	{ hex: "#7353b6", selected: false },
+	{ hex: "#a65ec2", selected: false },
+	{ hex: "#2f469e", selected: false },
+	{ hex: "#1abc9c", selected: false },
+	{ hex: "#f0932b", selected: false },
+	{ hex: "#e53332", selected: false },
+	{ hex: "#4caf50", selected: false },
+];
+
+const colorsTitleMap = new Map<string, string>();
+
+const generateKey = (str: string): number => {
+	let hash = 0;
+	str.split("").forEach((char) => {
+		hash = char.charCodeAt(0) + ((hash << 5) - hash);
+	});
+
+	return Math.abs(hash);
+};
+
+const getColorForKey = (key: number): string => {
+	const colorsAvailable = COLORS.filter((c) => !c.selected);
+	const color = colorsAvailable[key % colorsAvailable.length];
+
+	if (!color) {
+		return defaultBackgroundColor;
+	}
+
+	color.selected = true;
+	return color.hex;
+};
+
+const getBackgroundColor = (data: AppointmentModel): string => {
+	if (data.isPvp) {
+		return pvpBackgroundColor;
+	}
+
+	if (!data.title) {
+		return defaultBackgroundColor;
+	}
+
+	if (!colorsTitleMap.has(data.title)) {
+		const key = generateKey(data.title);
+		const color = getColorForKey(key);
+
+		colorsTitleMap.set(data.title, color);
+	}
+
+	return colorsTitleMap.get(data.title) || defaultBackgroundColor;
+};
 
 const PREFIX = "calendar";
 
@@ -139,16 +192,22 @@ const StyledDiv = styled("div", {
 	},
 }));
 
+const getFormatedHours = (dateTime: SchedulerDateTime): string => {
+	if (dateTime === "") {
+		return "";
+	}
+
+	const date = moment(dateTime.toString(), "YYYYMMDDTHHmmss[Z]").add(2, "hour").toDate();
+
+	return date.getUTCHours().toString().padStart(2, "0") + "h" + date.getUTCMinutes().toString().padStart(2, "0");
+};
+
 export const AppointementTooltipContent = ({ appointmentData, formatDate }: AppointmentTooltip.ContentProps) => {
 	if (!appointmentData) {
 		return <></>;
 	}
 
-	let bgColor = defaultBackgroundColor;
-
-	if (appointmentData.isPvp) {
-		bgColor = pvpBackgroundColor;
-	}
+	const bgColor = getBackgroundColor(appointmentData);
 
 	return (
 		<StyledTooltipContent className={classes.content}>
@@ -203,11 +262,7 @@ export const AppointmentComponent = ({ children, ...restProps }: Appointments.Ap
 		return <></>;
 	}
 
-	let bgColor = defaultBackgroundColor;
-
-	if (restProps.data.isPvp) {
-		bgColor = pvpBackgroundColor;
-	}
+	const bgColor = getBackgroundColor(restProps.data);
 
 	const endDate = restProps.data.endDate;
 	const isPassed = endDate ? moment(endDate.toString(), "YYYYMMDDTHHmmss[Z]").isBefore(moment()) : false;
@@ -248,14 +303,4 @@ export const TimeIndicator = ({ ...restProps }: CurrentTimeIndicator.IndicatorPr
 			<div className={classes.nowIndicator + " " + classes.line} />
 		</StyledDiv>
 	);
-};
-
-export const getFormatedHours = (dateTime: SchedulerDateTime): string => {
-	if (dateTime === "") {
-		return "";
-	}
-
-	const date = moment(dateTime.toString(), "YYYYMMDDTHHmmss[Z]").add(2, "hour").toDate();
-
-	return date.getUTCHours().toString().padStart(2, "0") + "h" + date.getUTCMinutes().toString().padStart(2, "0");
 };
