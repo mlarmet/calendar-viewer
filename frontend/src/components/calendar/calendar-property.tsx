@@ -304,3 +304,8 @@ export const TimeIndicator = ({ ...restProps }: CurrentTimeIndicator.IndicatorPr
 		</StyledDiv>
 	);
 };
+
+export const resetColors = () => {
+	colorsTitleMap.clear();
+	COLORS.forEach((c) => (c.selected = false));
+};

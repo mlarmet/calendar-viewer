@@ -17,7 +17,7 @@ import {
 
 import moment from "moment";
 
-import { AppointmentComponent, AppointmentContent, AppointementTooltipContent, TimeIndicator } from "./calendar-property";
+import { AppointmentComponent, AppointmentContent, AppointementTooltipContent, TimeIndicator, resetColors } from "./calendar-property";
 
 // Custom types imports
 import { CalendarProps, icalItem } from "./calendar.d";
@@ -238,6 +238,7 @@ const Calendar: React.FC<CalendarProps> = ({ classeCode }) => {
 	// Get all data when the component is mounted
 	useEffect(() => {
 		setListCours([]);
+		resetColors();
 
 		const toolBar = document.querySelector(".MuiToolbar-root.MuiToolbar-gutters.MuiToolbar-regular.Toolbar-toolbar");
 
