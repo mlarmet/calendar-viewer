@@ -56,21 +56,25 @@ router.get("/", async (req, res) => {
 	//const icsURL = `https://ade.univ-brest.fr/jsp/custom/modules/plannings/anonymous_cal.jsp?resources=${resources}&projectId=6&calType=ical&nbWeeks=4&displayConfigId=172`;
 	const icsURL = `https://ade.univ-brest.fr/jsp/custom/modules/plannings/anonymous_cal.jsp?resources=${resources}&projectId=13&calType=ical&displayConfigId=25&firstDate=${firstDate}&lastDate=${lastDate}`;
 
-	const results = await fetch(icsURL);
+	try {
+		const results = await fetch(icsURL);
 
-	if (!results.ok) {
+		if (!results.ok) {
+			throw new Error("error request ade");
+		}
+
+		const icalData = await results.text();
+		const calendar = ical2json.convert(icalData);
+
+		if (!calendar.VCALENDAR || !calendar.VCALENDAR[0] || !calendar.VCALENDAR[0].VEVENT) {
+			throw new Error("error request ade");
+		}
+
+		const cours = calendar.VCALENDAR[0].VEVENT;
+		return res.status(200).send({ success: true, code: 0, data: cours, message: "success fetch ade" });
+	} catch (error) {
 		return res.status(400).send({ success: false, code: -2, message: "error request ade" });
 	}
-
-	const icalData = await results.text();
-	const calendar = ical2json.convert(icalData);
-
-	if (!calendar.VCALENDAR || !calendar.VCALENDAR[0] || !calendar.VCALENDAR[0].VEVENT) {
-		return res.status(400).send({ success: false, code: -2, message: "error request ade" });
-	}
-
-	const cours = calendar.VCALENDAR[0].VEVENT;
-	return res.status(200).send({ success: true, code: 0, data: cours, message: "success fetch ade" });
 });
 
 module.exports = router;
