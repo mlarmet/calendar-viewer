@@ -18,6 +18,12 @@ const COLORS = [
 	{ hex: "#f0932b", selected: false },
 	{ hex: "#e53332", selected: false },
 	{ hex: "#4caf50", selected: false },
+	{ hex: "#d1ac10", selected: false },
+	{ hex: "#e67e22", selected: false },
+	{ hex: "#3498db", selected: false },
+	{ hex: "#9b59b6", selected: false },
+	{ hex: "#2ecc71", selected: false },
+	{ hex: "#1abc9c", selected: false },
 ];
 
 const colorsTitleMap = new Map<string, string>();
@@ -44,22 +50,32 @@ const getColorForKey = (key: number): string => {
 };
 
 const getBackgroundColor = (data: AppointmentModel): string => {
-	if (data.isPvp) {
-		return pvpBackgroundColor;
-	}
-
 	if (!data.title) {
 		return defaultBackgroundColor;
 	}
 
-	if (!colorsTitleMap.has(data.title)) {
-		const key = generateKey(data.title);
+	return colorsTitleMap.get(data.title) || defaultBackgroundColor;
+};
+
+export const setBackgroundColor = (data: AppointmentModel[]) => {
+	data.forEach((appointment) => {
+		if (!appointment.title) {
+			return;
+		}
+
+		if (appointment.isPvp) {
+			colorsTitleMap.set(appointment.title, pvpBackgroundColor);
+		}
+
+		if (colorsTitleMap.has(appointment.title)) {
+			return;
+		}
+
+		const key = generateKey(appointment.title);
 		const color = getColorForKey(key);
 
-		colorsTitleMap.set(data.title, color);
-	}
-
-	return colorsTitleMap.get(data.title) || defaultBackgroundColor;
+		colorsTitleMap.set(appointment.title, color);
+	});
 };
 
 const PREFIX = "calendar";

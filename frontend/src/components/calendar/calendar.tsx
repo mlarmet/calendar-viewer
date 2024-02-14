@@ -17,7 +17,7 @@ import {
 
 import moment from "moment";
 
-import { AppointmentComponent, AppointmentContent, AppointementTooltipContent, TimeIndicator, resetColors } from "./calendar-property";
+import { AppointmentComponent, AppointmentContent, AppointementTooltipContent, TimeIndicator, resetColors, setBackgroundColor } from "./calendar-property";
 
 // Custom types imports
 import { CalendarProps, icalItem } from "./calendar.d";
@@ -25,83 +25,83 @@ import { CalendarProps, icalItem } from "./calendar.d";
 // Style import
 import "./calendar.css";
 
-const dayStartHour: number = 8;
-const dayEndHour: number = 19;
-
-const daysExcluded: number[] = [0, 6];
-const cellDuraction: number = 45;
-
-const todayButtonText: TodayButtonProps["messages"] = {
-	today: "Aujourd'hui",
-};
-
-const shadePreviousCells: boolean = true;
-const shadePreviousAppointments: boolean = true;
-
-const loadingSwal = Swal.mixin({
-	title: "Récupération en cours...",
-	didOpen() {
-		Swal.showLoading();
-	},
-	didClose() {
-		Swal.hideLoading();
-	},
-	allowOutsideClick: false,
-	allowEscapeKey: false,
-	allowEnterKey: false,
-});
-
-const errorSwal = Swal.mixin({
-	icon: "error",
-	title: "Erreur lors de la récupération !",
-	confirmButtonText: "Réesayer",
-	confirmButtonColor: "var(--blue)",
-	showCloseButton: true,
-});
-
-const getData = (icalData: icalItem[]): AppointmentModel[] => {
-	const data: AppointmentModel[] = [];
-
-	if (icalData && icalData.length > 0) {
-		for (let i = 0; i < icalData.length; i++) {
-			const icalDataItem = icalData[i];
-
-			const startDate = icalDataItem.DTSTART;
-			const endDate = icalDataItem.DTEND;
-
-			// Remove the date from the description, prevent display it in the tooltip
-			const pattern = /\(Exporté le:\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}\)/;
-			const description = icalDataItem.DESCRIPTION.replace(pattern, "").split("\\n");
-
-			const title = icalDataItem.SUMMARY;
-
-			// "Période en entreprise" doesn't have a prof
-			const prof = description[description.length - 3];
-
-			const salle = icalDataItem.LOCATION.replaceAll("\\,", ", ");
-
-			data.push({
-				title,
-				startDate,
-				endDate,
-				prof,
-				salle,
-				isPvp: title.toLocaleLowerCase().includes("communication") || title.toLocaleLowerCase().includes("anglais"),
-			});
-		}
-	}
-
-	return data;
-};
-
-const getDate = (): string => {
-	return moment().format("YYYY-MM-DD");
-};
-
 const Calendar: React.FC<CalendarProps> = ({ classeCode }) => {
 	const [dateOfCache, setDateOfCache] = useState<string | undefined>(undefined);
 	const [listCours, setListCours] = useState<AppointmentModel[]>([]);
 	const [currentDate, setCurrentDate] = useState<string>(moment().format("YYYY-MM-DD"));
+
+	const dayStartHour: number = 8;
+	const dayEndHour: number = 19;
+
+	const daysExcluded: number[] = [0, 6];
+	const cellDuraction: number = 45;
+
+	const todayButtonText: TodayButtonProps["messages"] = {
+		today: "Aujourd'hui",
+	};
+
+	const shadePreviousCells: boolean = true;
+	const shadePreviousAppointments: boolean = true;
+
+	const loadingSwal = Swal.mixin({
+		title: "Récupération en cours...",
+		didOpen() {
+			Swal.showLoading();
+		},
+		didClose() {
+			Swal.hideLoading();
+		},
+		allowOutsideClick: false,
+		allowEscapeKey: false,
+		allowEnterKey: false,
+	});
+
+	const errorSwal = Swal.mixin({
+		icon: "error",
+		title: "Erreur lors de la récupération !",
+		confirmButtonText: "Réesayer",
+		confirmButtonColor: "var(--blue)",
+		showCloseButton: true,
+	});
+
+	const getData = (icalData: icalItem[]): AppointmentModel[] => {
+		const data: AppointmentModel[] = [];
+
+		if (icalData && icalData.length > 0) {
+			for (let i = 0; i < icalData.length; i++) {
+				const icalDataItem = icalData[i];
+
+				const startDate = icalDataItem.DTSTART;
+				const endDate = icalDataItem.DTEND;
+
+				// Remove the date from the description, prevent display it in the tooltip
+				const pattern = /\(Exporté le:\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}\)/;
+				const description = icalDataItem.DESCRIPTION.replace(pattern, "").split("\\n");
+
+				const title = icalDataItem.SUMMARY;
+
+				// "Période en entreprise" doesn't have a prof
+				const prof = description[description.length - 3];
+
+				const salle = icalDataItem.LOCATION.replaceAll("\\,", ", ");
+
+				data.push({
+					title,
+					startDate,
+					endDate,
+					prof,
+					salle,
+					isPvp: title.toLocaleLowerCase().includes("communication") || title.toLocaleLowerCase().includes("anglais"),
+				});
+			}
+		}
+
+		return data;
+	};
+
+	const getDate = (): string => {
+		return moment().format("YYYY-MM-DD");
+	};
 
 	// Update hours of the week when currentDate change (change week) or when listCours updated
 	useEffect(() => {
@@ -112,7 +112,7 @@ const Calendar: React.FC<CalendarProps> = ({ classeCode }) => {
 		const weekStart = date.clone().startOf("week");
 		const weekEnd = date.clone().endOf("week");
 
-		listCours.forEach((cours) => {
+		listCours?.forEach((cours) => {
 			const coursDate = moment(cours.startDate.toString(), "YYYYMMDDTHHmmss[Z]");
 			if (coursDate.isBetween(weekStart, weekEnd)) {
 				hours += moment(cours.endDate?.toString(), "YYYYMMDDTHHmmss[Z]").diff(coursDate, "hours", true);
@@ -125,6 +125,11 @@ const Calendar: React.FC<CalendarProps> = ({ classeCode }) => {
 			timeElement.textContent = hours + "h";
 		}
 	}, [currentDate, listCours]);
+
+	// Set background color of the calendar when listCours updated
+	useEffect(() => {
+		setBackgroundColor(listCours);
+	}, [listCours]);
 
 	const handleDateChange = (currentDate: Date) => {
 		const dateStr = moment(currentDate).format("YYYY-MM-DD");
@@ -177,8 +182,8 @@ const Calendar: React.FC<CalendarProps> = ({ classeCode }) => {
 			return false;
 		}
 
-		setListCours(dataCache.cours);
-		setDateOfCache(moment(dataCache.date).format("DD/MM/YYYY à HH:mm"));
+		setListCours(dataCache[classeCode].cours);
+		setDateOfCache(moment(dataCache[classeCode].date).format("DD/MM/YYYY à HH:mm"));
 
 		return true;
 	};
@@ -212,17 +217,20 @@ const Calendar: React.FC<CalendarProps> = ({ classeCode }) => {
 				headers: {
 					"Access-Control-Allow-Origin": import.meta.env.VITE_ORIGIN_URL,
 				},
+				signal: AbortSignal.timeout(5000),
 			});
 
 			const result = await response.json();
 
 			if (!result.success) {
-				displaySwal(false, true);
-
-				return;
+				throw new Error("Error while fetching data");
 			}
 
 			const cours = getData(result.data);
+
+			if (!cours) {
+				throw new Error("Error while parsing data");
+			}
 
 			setListCours(cours);
 			saveCache(cours);
@@ -231,6 +239,7 @@ const Calendar: React.FC<CalendarProps> = ({ classeCode }) => {
 		} catch (err) {
 			if (err) {
 				displaySwal(false, true);
+				loadCache();
 			}
 		}
 	};
