@@ -1,0 +1,18 @@
+footer {
+	padding: 1em 0;
+	color: var(--white);
+	background-color: var(--black);
+}
+
+footer p {
+	margin: 0;
+	text-align: center;
+}
+
+footer p a {
+	color: var(--white);
+}
+
+footer p a:hover {
+	color: var(--grey);
+}

@@ -8,22 +8,3 @@
 #viewer #container {
 	flex: 1;
 }
-
-#viewer footer {
-	background-color: var(--black);
-	color: var(--white);
-	padding: 1em 0;
-}
-
-#viewer footer p {
-	margin: 0;
-	text-align: center;
-}
-
-#viewer footer p a {
-	color: var(--white);
-}
-
-#viewer footer p a:hover {
-	color: var(--grey);
-}

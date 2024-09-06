@@ -345,7 +345,7 @@ const Calendar: React.FC<CalendarProps> = ({ classeCode, pvpCode }) => {
 
 			<ThemeProvider theme={darkTheme}>
 				<CssBaseline />
-				<Paper variant="outlined" square>
+				<Paper variant="outlined" square style={{ borderBottomColor: "var(--grey)" }}>
 					<Scheduler data={combinedList} height="auto" locale="fr-FR">
 						<ViewState defaultCurrentDate={getDate()} onCurrentDateChange={handleDateChange} />
 						<Toolbar />

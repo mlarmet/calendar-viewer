@@ -3,23 +3,18 @@ import { AppointmentModel } from "@devexpress/dx-react-scheduler";
 const BACKGROUND_COLOR = {
 	DEFAULT: "#4FC3F7",
 	PVP: "#7A7A76",
-	CONFERENCE: "#e53332",
+	CONFERENCE: "#c91b1b",
 };
 
 const COLORS = [
-	{ hex: "#f0932b", selected: false },
-	{ hex: "#4caf50", selected: false },
 	{ hex: "#2f469e", selected: false },
+	{ hex: "#4caf50", selected: false },
+	{ hex: "#8e075a", selected: false },
+	{ hex: "#c16431", selected: false },
 	{ hex: "#1abc9c", selected: false },
-	{ hex: "#00a5e0", selected: false },
 	{ hex: "#a65ec2", selected: false },
+	{ hex: "#d6954a", selected: false },
 	{ hex: "#7353b6", selected: false },
-	{ hex: "#1abc9c", selected: false },
-	{ hex: "#d1ac10", selected: false },
-	{ hex: "#e67e22", selected: false },
-	{ hex: "#3498db", selected: false },
-	{ hex: "#9b59b6", selected: false },
-	{ hex: "#2ecc71", selected: false },
 ];
 
 const colorsTitleMap = new Map<string, string>();
