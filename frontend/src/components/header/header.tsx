@@ -5,29 +5,51 @@ import { HeaderProps, Option } from "./header.d";
 
 import "./header.css";
 
-const options: Option[] = [
-	{ value: "7073", label: "M2 TIIL-A" },
-	{ value: "35", label: "L3 IFA 3" },
+const classeOptions: Option[] = [
+	{ value: "422", label: "M1 Info 1A" },
+	{ value: "418", label: "M1 Info 1B" },
+	{ value: "5705", label: "M1 Info 2A" },
+	{ value: "5707", label: "M1 Info 2B" },
 ];
 
-const Header: React.FC<HeaderProps> = ({ startClasseCode, onClasseChange }) => {
-	const startOption = options.find((option) => option.value === startClasseCode) || options[0];
+const pvpOptions: Option[] = [
+	{ value: "7326", label: "PVP 1" },
+	{ value: "7739", label: "PVP 2" },
+	{ value: "7780", label: "PVP 3" },
+];
 
-	const [selectedOption, setSelectedOption] = useState(startOption);
+const Header: React.FC<HeaderProps> = ({ startClasseCode, startPvpCode, onClasseChange, onPvpChange }) => {
+	const startClasse = classeOptions.find((option) => option.value === startClasseCode) || classeOptions[0];
+	const startPvp = pvpOptions.find((option) => option.value === startPvpCode) || pvpOptions[0];
+
+	const [selectedClass, setSelectedClass] = useState(startClasse);
+	const [selectedPvp, setSelectedPvp] = useState(startPvp);
 
 	const handleClasseChange = (newOption: SingleValue<Option>) => {
 		if (newOption === null || newOption?.value === null) {
 			return;
 		}
 
-		setSelectedOption(newOption);
+		setSelectedClass(newOption);
 	};
 
-	// Send the selected class to the parent component
+	const handlePvpChange = (newOption: SingleValue<Option>) => {
+		if (newOption === null || newOption?.value === null) {
+			return;
+		}
+
+		setSelectedPvp(newOption);
+	};
+
 	useEffect(() => {
-		onClasseChange(selectedOption.value);
+		onClasseChange(selectedClass.value);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [selectedOption]);
+	}, [selectedClass]);
+
+	useEffect(() => {
+		onPvpChange(selectedPvp.value);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [selectedPvp]);
 
 	return (
 		<header>
@@ -35,7 +57,8 @@ const Header: React.FC<HeaderProps> = ({ startClasseCode, onClasseChange }) => {
 				<span className="emoji">📅</span>Emplois du temps
 			</h1>
 			<div id="select-classe">
-				<Select className="select" value={selectedOption} onChange={handleClasseChange} options={options} isSearchable={false} />
+				<Select className="select" value={selectedClass} onChange={handleClasseChange} options={classeOptions} isSearchable={false} />
+				<Select className="select" value={selectedPvp} onChange={handlePvpChange} options={pvpOptions} isSearchable={false} />
 			</div>
 		</header>
 	);

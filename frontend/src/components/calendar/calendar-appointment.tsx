@@ -1,119 +1,12 @@
-import { styled, Theme } from "@mui/material/styles";
-import Grid from "@mui/material/Grid";
-import { Room, People, Lens, AccessTime, SvgIconComponent } from "@mui/icons-material";
-
-import { AppointmentModel, SchedulerDateTime } from "@devexpress/dx-react-scheduler";
-import { Appointments, AppointmentTooltip, CurrentTimeIndicator } from "@devexpress/dx-react-scheduler-material-ui";
 import moment from "moment";
 
-const pvpBackgroundColor: string = "#7A7A76";
-const defaultBackgroundColor: string = "#4FC3F7";
+import { AccessTime, Lens, People, Room, SvgIconComponent } from "@mui/icons-material";
+import Grid from "@mui/material/Grid";
+import { styled, Theme } from "@mui/material/styles";
 
-const COLORS = [
-	{ hex: "#00a5e0", selected: false },
-	{ hex: "#7353b6", selected: false },
-	{ hex: "#a65ec2", selected: false },
-	{ hex: "#2f469e", selected: false },
-	{ hex: "#1abc9c", selected: false },
-	{ hex: "#f0932b", selected: false },
-	{ hex: "#e53332", selected: false },
-	{ hex: "#4caf50", selected: false },
-	{ hex: "#d1ac10", selected: false },
-	{ hex: "#e67e22", selected: false },
-	{ hex: "#3498db", selected: false },
-	{ hex: "#9b59b6", selected: false },
-	{ hex: "#2ecc71", selected: false },
-	{ hex: "#1abc9c", selected: false },
-];
+import { Appointments, AppointmentTooltip, CurrentTimeIndicator } from "@devexpress/dx-react-scheduler-material-ui";
 
-const colorsTitleMap = new Map<string, string>();
-
-const generateKey = (str: string): number => {
-	let hash = 0;
-	str.split("").forEach((char) => {
-		hash = char.charCodeAt(0) + ((hash << 5) - hash);
-	});
-
-	return Math.abs(hash);
-};
-
-const getColorForKey = (key: number): string => {
-	const colorsAvailable = COLORS.filter((c) => !c.selected);
-	const color = colorsAvailable[key % colorsAvailable.length];
-
-	if (!color) {
-		return defaultBackgroundColor;
-	}
-
-	color.selected = true;
-	return color.hex;
-};
-
-const getBackgroundColor = (data: AppointmentModel): string => {
-	if (!data.title) {
-		return defaultBackgroundColor;
-	}
-
-	return colorsTitleMap.get(data.title) || defaultBackgroundColor;
-};
-
-export const setBackgroundColor = (data: AppointmentModel[]) => {
-	data.forEach((appointment) => {
-		if (!appointment.title) {
-			return;
-		}
-
-		if (appointment.isPvp) {
-			colorsTitleMap.set(appointment.title, pvpBackgroundColor);
-		}
-
-		if (colorsTitleMap.has(appointment.title)) {
-			return;
-		}
-
-		const key = generateKey(appointment.title);
-		const color = getColorForKey(key);
-
-		colorsTitleMap.set(appointment.title, color);
-	});
-};
-
-const PREFIX = "calendar";
-
-const classes = {
-	flexibleSpace: `${PREFIX}-flexibleSpace`,
-	prioritySelector: `${PREFIX}-prioritySelector`,
-	content: `${PREFIX}-content`,
-	contentContainer: `${PREFIX}-contentContainer`,
-	text: `${PREFIX}-text`,
-	title: `${PREFIX}-title`,
-	icon: `${PREFIX}-icon`,
-	contentItemIcon: `${PREFIX}-contentItemIcon`,
-	grayIcon: `${PREFIX}-grayIcon`,
-	colorfulContent: `${PREFIX}-colorfulContent`,
-	lens: `${PREFIX}-lens`,
-	textCenter: `${PREFIX}-textCenter`,
-	dateAndTitle: `${PREFIX}-dateAndTitle`,
-	titleContainer: `${PREFIX}-titleContainer`,
-	container: `${PREFIX}-container`,
-	bullet: `${PREFIX}-bullet`,
-	prioritySelectorItem: `${PREFIX}-prioritySelectorItem`,
-	priorityText: `${PREFIX}-priorityText`,
-	priorityShortText: `${PREFIX}-priorityShortText`,
-	cellLowPriority: `${PREFIX}-cellLowPriority`,
-	cellMediumPriority: `${PREFIX}-cellMediumPriority`,
-	cellHighPriority: `${PREFIX}-cellHighPriority`,
-	headerCellLowPriority: `${PREFIX}-headerCellLowPriority`,
-	headerCellMediumPriority: `${PREFIX}-headerCellMediumPriority`,
-	headerCellHighPriority: `${PREFIX}-headerCellHighPriority`,
-	line: `${PREFIX}-line`,
-	circle: `${PREFIX}-circle`,
-	nowIndicator: `${PREFIX}-nowIndicator`,
-	shadedCell: `${PREFIX}-shadedCell`,
-	shadedPart: `${PREFIX}-shadedPart`,
-	appointment: `${PREFIX}-appointment`,
-	shadedAppointment: `${PREFIX}-shadedAppointment`,
-};
+import { classes, getBackgroundColor } from "./calendar-property";
 
 const createStyledIcon = (IconComponent: SvgIconComponent) =>
 	styled(IconComponent)(({ theme: { palette } }) => ({
@@ -208,16 +101,6 @@ const StyledDiv = styled("div", {
 	},
 }));
 
-const getFormatedHours = (dateTime: SchedulerDateTime): string => {
-	if (dateTime === "") {
-		return "";
-	}
-
-	const date = moment(dateTime.toString(), "YYYYMMDDTHHmmss[Z]").add(2, "hour").toDate();
-
-	return date.getUTCHours().toString().padStart(2, "0") + "h" + date.getUTCMinutes().toString().padStart(2, "0");
-};
-
 export const AppointementTooltipContent = ({ appointmentData, formatDate }: AppointmentTooltip.ContentProps) => {
 	if (!appointmentData) {
 		return <></>;
@@ -297,13 +180,13 @@ export const AppointmentComponent = ({ children, ...restProps }: Appointments.Ap
 	);
 };
 
-export const AppointmentContent = ({ data, ...restProps }: Appointments.AppointmentContentProps) => {
+export const AppointmentContent = ({ data, formatDate, ...restProps }: Appointments.AppointmentContentProps) => {
 	return (
-		<Appointments.AppointmentContent className={classes.container} {...restProps} data={data}>
+		<Appointments.AppointmentContent className={classes.container} {...restProps} data={data} formatDate={formatDate}>
 			<div className="event-text">
 				<p style={{ fontWeight: "bold" }}>{data.title}</p>
 				<p>
-					{getFormatedHours(data.startDate)} - {getFormatedHours(data.endDate || "")}
+					{formatDate(data.startDate, { hour: "numeric", minute: "numeric" })} - {formatDate(data.endDate, { hour: "numeric", minute: "numeric" })}
 				</p>
 				<p className="description">{data.salle}</p>
 				<p className="description">{data.prof}</p>
@@ -319,9 +202,4 @@ export const TimeIndicator = ({ ...restProps }: CurrentTimeIndicator.IndicatorPr
 			<div className={classes.nowIndicator + " " + classes.line} />
 		</StyledDiv>
 	);
-};
-
-export const resetColors = () => {
-	colorsTitleMap.clear();
-	COLORS.forEach((c) => (c.selected = false));
 };

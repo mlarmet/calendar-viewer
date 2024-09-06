@@ -13,4 +13,5 @@ export interface icalItem {
 
 export type CalendarProps = {
 	classeCode: string;
+	pvpCode: string;
 };
