@@ -1,8 +1,3 @@
-.Container-container {
-	background-color: #fff;
-	flex: 1;
-}
-
 .MainLayout-container {
 	overflow-y: hidden !important;
 }
@@ -72,7 +67,7 @@
 .truncated {
 	display: -webkit-box;
 	/* line authorized before ellipsis */
-	-webkit-line-clamp: 3;
+	line-clamp: 3;
 	-webkit-box-orient: vertical;
 	overflow: hidden;
 }
@@ -85,7 +80,7 @@
 	margin-top: 0.5em;
 }
 
-@media screen and (max-width: 560px) {
+@media screen and (max-width: 570px) {
 	#time-text {
 		display: none;
 	}
